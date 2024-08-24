@@ -3,19 +3,28 @@ import { MovieContext } from "../context";
 import Delete from "../assets/delete.svg";
 import Checkout from "../assets/icons/checkout.svg";
 import { getImgUrl } from "../utils/cine-utility";
+import { toast } from "react-toastify";
 
 const CartDetails = ({ onClose }) => {
-  const { cartData, setCartData } = useContext(MovieContext);
+  const { state, dispatch } = useContext(MovieContext);
 
-  console.log(cartData);
+  console.log(state.cartData);
 
-  const handleDeleteCart = (event, itemId) => {
+  const handleDeleteCart = (event, item) => {
     event.preventDefault();
 
-    const filteredItem = cartData.filter((item) => {
-      return item.id !== itemId;
+    dispatch({
+      type: "REMOVE_FROM_CART",
+      payload: item,
     });
-    setCartData([...filteredItem]);
+    toast.success(`Removed ${item.title} from Cart !`, {
+      position: toast.POSITION.BOTTOM_RIGHT,
+    });
+
+    // const filteredItem = cartData.filter((item) => {
+    //   return item.id !== itemId;
+    // });
+    // setCartData([...filteredItem]);
   };
 
   return (
@@ -26,10 +35,10 @@ const CartDetails = ({ onClose }) => {
             Your Carts
           </h2>
           <div className="space-y-8 lg:space-y-12 max-h-[450px] overflow-auto mb-10 lg:mb-14">
-            {cartData.length === 0 ? (
+            {state.cartData.length === 0 ? (
               <p className="text-3xl">The Cart is empty</p>
             ) : (
-              cartData.map((item) => (
+              state.cartData.map((item) => (
                 <div key={item.id} className="grid grid-cols-[1fr_auto] gap-4">
                   <div className="flex items-center gap-4">
                     <img
@@ -54,7 +63,7 @@ const CartDetails = ({ onClose }) => {
                       <img className="w-5 h-5" src={Delete} alt="delete" />
                       <span
                         className="max-md:hidden"
-                        onClick={() => handleDeleteCart(event, item.id)}
+                        onClick={() => handleDeleteCart(event, item)}
                       >
                         Remove
                       </span>
